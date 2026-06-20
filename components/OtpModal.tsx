@@ -69,7 +69,7 @@ const OtpModal = ({
           </AlertDialogTitle>
           <AlertDialogDescription className="subtitle-2 text-center text-light-100">
             We&apos; ve sent a code to{" "}
-            <span className="pl-1 text-brand">adenijiadeleke2@gm</span>
+            <span className="pl-1 text-brand"> {email}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <InputOTP maxLength={6} value={password} onChange={setPassword}>

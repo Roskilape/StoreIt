@@ -79,6 +79,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
             ? "email already exist click sign In"
             : "Failed to create an account. Please try again.",
       );
+      console.log(error);
+      console.log(error.message);
     } finally {
       setIsLoading(false);
     }

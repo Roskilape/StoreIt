@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 
 import React from "react";
 import {
@@ -41,9 +41,11 @@ const OtpModal = ({
     setIsLoading(true);
 
     try {
+      if (!accountId)
+        throw new Error("Missing account ID for OTP verification");
+
       const sessionId = await verifySecret({ accountId, password });
       if (sessionId) router.push("/");
-      console.log("Current accountId:", accountId);
     } catch (error) {
       console.error("failed to verify OTP", error);
     } finally {
@@ -55,7 +57,6 @@ const OtpModal = ({
     // call API to resend OTP
     const resendOtp = await sendEmailOTP({ email });
     if (resendOtp) {
-      console.log("New accountId:", resendOtp);
       setAccountId(resendOtp);
       setCountdown(60);
     }

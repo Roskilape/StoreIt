@@ -24,14 +24,17 @@ import { verifySecret, sendEmailOTP } from "@/lib/actions/user.action";
 const OtpModal = ({
   email,
   accountId,
+  setAccountId,
 }: {
   email: string;
-  accountId: string;
+  accountId: string | null;
+  setAccountId: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(true);
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const [countdown, setCountdown] = React.useState(60);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -40,6 +43,7 @@ const OtpModal = ({
     try {
       const sessionId = await verifySecret({ accountId, password });
       if (sessionId) router.push("/");
+      console.log("Current accountId:", accountId);
     } catch (error) {
       console.error("failed to verify OTP", error);
     } finally {
@@ -49,8 +53,23 @@ const OtpModal = ({
 
   const handleOtpResend = async () => {
     // call API to resend OTP
-    await sendEmailOTP({ email });
+    const resendOtp = await sendEmailOTP({ email });
+    if (resendOtp) {
+      console.log("New accountId:", resendOtp);
+      setAccountId(resendOtp);
+      setCountdown(60);
+    }
   };
+
+  React.useEffect(() => {
+    if (countdown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -107,9 +126,10 @@ const OtpModal = ({
                 type="button"
                 variant="link"
                 className="pl-1 text-brand"
+                disabled={countdown > 0}
                 onClick={handleOtpResend}
               >
-                Resend Code
+                {countdown > 0 ? `Resend in ${countdown}s` : "Resend Code"}
               </Button>
             </div>
           </div>

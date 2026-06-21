@@ -39,6 +39,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
 
   // Define your form schema using Zod
   const formSchema = authFormSchema(type);
@@ -68,11 +69,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
       }
 
       setAccountId(user.accountId);
-    } catch {
+    } catch (error: any) {
       setErrorMessage(
         type === "signIn"
-          ? "Failed to sign In. Please try again."
-          : "Failed to create an account. Please try again.",
+          ? error.message === "email is not registered"
+            ? "email is not registered, click sign Up and Create new Account"
+            : "Failed to sign In. Please try again."
+          : error.message === "account already exist"
+            ? "email already exist click sign In"
+            : "Failed to create an account. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -133,6 +138,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             type="submit"
             disabled={isLoading}
             className="form-submit-button text-white"
+            onClick={() => setIsSubmitClicked(true)}
           >
             {type === "signIn" ? "Sign In" : "Sign Up"}
             {isLoading && (
@@ -162,8 +168,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
         </form>
       </Form>
       {/* OTP VERIFICATION */}
-      {accountId && (
-        <OtpModal email={form.getValues("email")} accountId={accountId} />
+      {accountId && isSubmitClicked && (
+        <OtpModal
+          email={form.getValues("email")}
+          accountId={accountId}
+          setAccountId={setAccountId}
+        />
       )}
     </>
   );

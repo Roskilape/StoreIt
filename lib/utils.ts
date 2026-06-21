@@ -194,6 +194,8 @@ export const constructDownloadUrl = (bucketFileId: string) => {
 
 export const getFileTypesParams = (type: string) => {
   switch (type) {
+    case "all":
+      return ["document", "images", "video", "audio", "other"];
     case "documents":
       return ["document"];
     case "images":

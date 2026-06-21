@@ -48,7 +48,7 @@ const Sidebar = ({ fullName, email, avatar }: props) => {
                 src={icon}
                 alt={name}
                 width={24}
-                height={24}
+                height={25}
                 className={cn(
                   "nav-icon",
                   pathname === url && "nav-icon-active",

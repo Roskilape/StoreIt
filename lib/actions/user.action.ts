@@ -7,7 +7,7 @@ import { parseStringify, handleError } from "../utils";
 import { cookies } from "next/headers";
 import { redirect, unstable_rethrow } from "next/navigation";
 
-const getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
 
   const result = await databases.listDocuments(
@@ -38,6 +38,7 @@ export const createAccount = async ({
   email: string;
 }) => {
   const existingUser = await getUserByEmail(email);
+  if (existingUser) throw new Error("account already exist");
   const accountId = await sendEmailOTP({ email });
   if (!accountId) throw new Error("failed to send an OTP");
 
@@ -126,7 +127,7 @@ export const signInUser = async ({ email }: { email: string }) => {
       const accountId = await sendEmailOTP({ email });
       return { accountId };
     } else {
-      return null;
+      throw new Error("email is not registered");
     }
   } catch (error) {
     return handleError(error, "user not found");
